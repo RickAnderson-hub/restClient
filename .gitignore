@@ -2,11 +2,22 @@
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
 
-# IDE
+# Java bytecode & JVM crash dumps
+*.class
+hs_err_pid*.log
+replay_pid*.log
+
+# IDE — IntelliJ IDEA
 .idea/
 *.iml
+out/
+
+# IDE — VS Code
 .vscode/
+
+# IDE — Eclipse
 *.classpath
 *.project
 .settings/
@@ -14,11 +25,16 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Application data
-*.h2.db
+# H2 database files (if accidentally created inside the repo)
+*.db
+*.mv.db
 *.trace.db
-~/.restclient/
+
+# JaCoCo coverage execution data
+*.exec
 
 # Logs
 *.log
+logs/
