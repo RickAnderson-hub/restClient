@@ -1,0 +1,24 @@
+plugins {
+    id 'java-library'
+}
+
+description = 'Persistence layer (Spring Data JPA + H2)'
+
+dependencies {
+    // Core domain models exposed so service module can use them without re-declaring :core
+    api project(':core')
+
+    // JPA + Spring Data — declared implementation; service module declares it too for JpaRepository access
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // Needed for @EntityScan and @EnableJpaRepositories in PersistenceConfig
+    implementation 'org.springframework.boot:spring-boot-autoconfigure'
+    // Jackson for JSON blob AttributeConverters (Request/Response history snapshots)
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    runtimeOnly "com.h2database:h2:${h2Version}"
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
