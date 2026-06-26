@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+description = 'Service layer (business logic, HTTP execution)'
+
+dependencies {
+    implementation project(':core')
+    implementation project(':persistence')
+
+    // Needed for JpaRepository types used via repositories injected from :persistence
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation "com.squareup.okhttp3:okhttp:${okHttpVersion}"
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+}
