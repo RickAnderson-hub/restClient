@@ -1,0 +1,114 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version "${springBootVersion}" apply false
+    id 'io.spring.dependency-management' version '1.1.4' apply false
+    id 'org.openjfx.javafxplugin' version '0.1.0' apply false
+    id 'com.github.spotbugs' version '6.0.25' apply false
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'jacoco'
+    apply plugin: 'com.github.spotbugs'
+
+    repositories {
+        mavenCentral()
+        maven { url "https://repo.spring.io/milestone" }
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+        }
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+        sourceCompatibility = "25"
+        targetCompatibility = "25"
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.compilerArgs << '-parameters'
+    }
+
+    dependencies {
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+        testCompileOnly 'org.projectlombok:lombok'
+        testAnnotationProcessor 'org.projectlombok:lombok'
+        // Gradle 9 no longer provides the JUnit Platform launcher automatically
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+
+    test {
+        useJUnitPlatform()
+        finalizedBy jacocoTestReport
+    }
+
+    jacocoTestReport {
+        dependsOn test
+        reports {
+            xml.required = true
+            html.required = true
+        }
+    }
+
+    jacocoTestCoverageVerification {
+        violationRules {
+            rule {
+                excludes = [
+                    'com.restclient.app.RestClientApplication',
+                    'com.restclient.app.JavaFxApplication',
+                    'com.restclient.app.JavaFxApplication$SpringApplicationBuilder',
+                    'com.restclient.persistence.config.PersistenceConfig',
+                ]
+                limit {
+                    minimum = 0.80
+                }
+            }
+        }
+    }
+
+    check.dependsOn jacocoTestCoverageVerification
+
+    spotbugs {
+        toolVersion = '4.8.6'
+        effort = 'max'
+        reportLevel = 'medium'
+        ignoreFailures = false
+        excludeFilter = rootProject.file('config/spotbugs/exclude-filter.xml')
+    }
+
+    spotbugsMain {
+        reports {
+            html {
+                required = true
+                outputLocation = layout.buildDirectory.file('reports/spotbugs/main.html')
+            }
+            xml { required = false }
+        }
+    }
+
+    spotbugsTest {
+        reports {
+            html {
+                required = true
+                outputLocation = layout.buildDirectory.file('reports/spotbugs/test.html')
+            }
+            xml { required = false }
+        }
+    }
+}
+
+// JavaFX and Spring Boot specific configurations per module are in their own build.gradle files

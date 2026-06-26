@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Bootstrap / lifecycle classes: no testable logic, JavaFX toolkit side-effects -->
+    <Match>
+        <Class name="~com\.restclient\.app\..*" />
+    </Match>
+
+    <!-- Spring @Configuration classes: verified by context integration tests, not unit tests -->
+    <Match>
+        <Class name="~com\.restclient\.persistence\.config\..*" />
+    </Match>
+
+    <!-- Static ObjectMapper in converters is intentionally shared (thread-safe after config) -->
+    <Match>
+        <Class name="~com\.restclient\.persistence\.converter\..*" />
+        <Bug pattern="MS_EXPOSE_REP,EI_EXPOSE_REP2" />
+    </Match>
+</FindBugsFilter>
