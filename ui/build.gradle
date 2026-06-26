@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+}
+
+description = 'JavaFX UI layer (controllers, views, view models)'
+
+javafx {
+    version = "${javaFxVersion}"
+    modules = ['javafx.controls', 'javafx.fxml']
+}
+
+dependencies {
+    implementation project(':core')
+    implementation project(':service')
+    implementation project(':persistence')
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+
+    // Syntax highlighting for JSON/XML viewers
+    implementation "org.fxmisc.richtext:richtextfx:${richTextFxVersion}"
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+}

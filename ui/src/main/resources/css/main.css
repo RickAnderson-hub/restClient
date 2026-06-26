@@ -1,0 +1,76 @@
+/* Base palette — a restrained dark theme reminiscent of Insomnia */
+.root-pane {
+    -fx-background-color: #1e1f29;
+    -fx-font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+    -fx-font-size: 13px;
+}
+
+/* Sidebar */
+.sidebar {
+    -fx-background-color: #16171f;
+    -fx-padding: 12;
+    -fx-spacing: 8;
+}
+
+.sidebar-title {
+    -fx-text-fill: #8b8d98;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+/* Request bar */
+.request-bar {
+    -fx-padding: 10;
+    -fx-background-color: #232430;
+    -fx-alignment: center-left;
+}
+
+.method-combo {
+    -fx-min-width: 110;
+}
+
+.send-button {
+    -fx-background-color: #7d4cdb;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 6 18 6 18;
+    -fx-background-radius: 4;
+}
+
+.send-button:hover {
+    -fx-background-color: #8f63e0;
+}
+
+/* Panels */
+.content {
+    -fx-background-color: #1e1f29;
+}
+
+.panel-title {
+    -fx-text-fill: #8b8d98;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 0 4 8;
+}
+
+.request-editor,
+.response-viewer {
+    -fx-background-color: #1e1f29;
+}
+
+.text-area {
+    -fx-control-inner-background: #232430;
+    -fx-text-fill: #e4e4ec;
+    -fx-font-family: "JetBrains Mono", "Consolas", monospace;
+}
+
+/* Status bar */
+.status-bar {
+    -fx-background-color: #16171f;
+    -fx-padding: 4 12 4 12;
+}
+
+.status-bar .label {
+    -fx-text-fill: #8b8d98;
+    -fx-font-size: 11px;
+}

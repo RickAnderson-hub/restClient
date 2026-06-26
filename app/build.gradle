@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+}
+
+description = 'Application entry point (Spring Boot + JavaFX bootstrap)'
+
+javafx {
+    version = "${javaFxVersion}"
+    modules = ['javafx.controls', 'javafx.fxml']
+}
+
+dependencies {
+    implementation project(':core')
+    implementation project(':service')
+    implementation project(':persistence')
+    implementation project(':ui')
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+}
+
+springBoot {
+    mainClass = 'com.restclient.app.RestClientApplication'
+}
+
+// Allow `./gradlew :app:run` during development
+tasks.register('run', JavaExec) {
+    group = 'application'
+    description = 'Run the JavaFX application'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.restclient.app.RestClientApplication'
+}
