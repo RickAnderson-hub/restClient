@@ -1,0 +1,11 @@
+plugins {
+    id 'java'
+}
+
+description = 'Core domain models (framework-independent)'
+
+dependencies {
+    // No Spring or JavaFX dependencies - pure POJO models
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
