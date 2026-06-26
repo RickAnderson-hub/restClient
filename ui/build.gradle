@@ -16,10 +16,11 @@ dependencies {
     implementation project(':persistence')
 
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
     // Syntax highlighting for JSON/XML viewers
     implementation "org.fxmisc.richtext:richtextfx:${richTextFxVersion}"
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
 }

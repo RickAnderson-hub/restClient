@@ -34,7 +34,7 @@
                 <ComboBox fx:id="methodComboBox" styleClass="method-combo"/>
                 <TextField fx:id="urlField" promptText="https://api.example.com/endpoint"
                            HBox.hgrow="ALWAYS"/>
-                <Button text="Send" onAction="#onSend" styleClass="send-button"/>
+                <Button fx:id="sendButton" text="Send" onAction="#onSend" styleClass="send-button"/>
             </HBox>
 
             <!-- Request/response split -->

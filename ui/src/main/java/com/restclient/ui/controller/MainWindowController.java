@@ -1,42 +1,51 @@
 package com.restclient.ui.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.restclient.core.model.BodyType;
 import com.restclient.core.model.HttpMethod;
+import com.restclient.core.model.Request;
+import com.restclient.core.model.RequestBody;
+import com.restclient.core.model.Response;
+import com.restclient.service.HttpExecutionService;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Controller for the application's root window. At this skeleton stage it only
- * wires up the request bar (method + URL + send) and a placeholder response
- * area; business logic is delegated to services in later phases.
+ * Controller for the application's root window.
  *
- * <p>Annotated {@code @Component} so Spring constructs it and the
- * {@code FXMLLoader} (via the controller factory) receives a managed instance
- * with dependencies injected.
+ * <p>HTTP execution runs on a virtual thread so the FX thread is never blocked.
+ * All UI mutations after the background call return via {@link Platform#runLater}.
  */
 @Component
 public class MainWindowController {
 
-    @FXML
-    private ComboBox<HttpMethod> methodComboBox;
+    @Autowired
+    HttpExecutionService httpExecutionService;
 
     @FXML
-    private TextField urlField;
-
+    ComboBox<HttpMethod> methodComboBox;
     @FXML
-    private TextArea responseArea;
-
+    TextField urlField;
     @FXML
-    private Label statusLabel;
+    TextArea requestBodyArea;
+    @FXML
+    TextArea responseArea;
+    @FXML
+    Label statusLabel;
+    @FXML
+    Button sendButton;
 
-    /**
-     * Called automatically by the {@link javafx.fxml.FXMLLoader} once the FXML
-     * fields are injected.
-     */
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    /** Initialised by {@link javafx.fxml.FXMLLoader} after FXML fields are injected. */
     @FXML
     public void initialize() {
         methodComboBox.setItems(FXCollections.observableArrayList(HttpMethod.values()));
@@ -44,15 +53,67 @@ public class MainWindowController {
         statusLabel.setText("Ready");
     }
 
-    /**
-     * Placeholder send handler — wired to the Send button in FXML. Real HTTP
-     * execution arrives in Phase 2 via the service layer.
-     */
+    /** Fires when the Send button is clicked. */
     @FXML
     public void onSend() {
-        HttpMethod method = methodComboBox.getValue();
-        String url = urlField.getText();
-        statusLabel.setText("Would send " + method + " " + (url == null || url.isBlank() ? "(no URL)" : url));
-        responseArea.setText("Response viewer placeholder.\n\nHTTP execution is wired up in the next phase.");
+        var url = urlField.getText();
+        if (url == null || url.isBlank()) {
+            statusLabel.setText("Enter a URL");
+            return;
+        }
+        var method = methodComboBox.getValue();
+        var bodyText = requestBodyArea.getText();
+        var request = Request.builder()
+                .method(method)
+                .url(url.trim())
+                .body(method.supportsBody() && bodyText != null && !bodyText.isBlank()
+                        ? new RequestBody(BodyType.JSON, bodyText)
+                        : RequestBody.none())
+                .build();
+        sendButton.setDisable(true);
+        responseArea.clear();
+        statusLabel.setText("Sending…");
+        Thread.ofVirtual().start(() -> {
+            try {
+                var response = httpExecutionService.execute(request);
+                Platform.runLater(() -> showResponse(response));
+            } catch (Exception e) {
+                Platform.runLater(() -> showError(e.getMessage()));
+            } finally {
+                Platform.runLater(() -> sendButton.setDisable(false));
+            }
+        });
+    }
+
+    private void showResponse(Response response) {
+        statusLabel.setText(response.getStatusCode() + " " + response.getStatusText()
+                + "  •  " + response.getDurationMillis() + "ms"
+                + "  •  " + formatSize(response.getSizeBytes()));
+        var body = response.getBody() != null ? response.getBody() : "";
+        responseArea.setText(isJson(response.getContentType()) ? prettyJson(body) : body);
+    }
+
+    private void showError(String message) {
+        statusLabel.setText("Error");
+        responseArea.setText("Request failed:\n\n" + message);
+    }
+
+    private boolean isJson(String contentType) {
+        return contentType != null && contentType.contains("json");
+    }
+
+    private String prettyJson(String raw) {
+        try {
+            return mapper.writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(mapper.readTree(raw));
+        } catch (Exception e) {
+            return raw;
+        }
+    }
+
+    private String formatSize(long bytes) {
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return String.format("%.1f KB", bytes / 1024.0);
+        return String.format("%.1f MB", bytes / (1024.0 * 1024));
     }
 }
