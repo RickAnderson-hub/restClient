@@ -5,8 +5,8 @@ plugins {
 
 rootProject.name = 'rest-client'
 
-include 'core'
-include 'persistence'
-include 'service'
-include 'ui'
-include 'app'
+include 'core', 'persistence', 'service', 'ui', 'app'
+
+['core', 'persistence', 'service', 'ui', 'app'].each { name ->
+    project(":$name").projectDir = file("modules/$name")
+}

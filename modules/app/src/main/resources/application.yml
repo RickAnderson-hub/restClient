@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    # H2 file-based database — stored in the user's home directory so data survives restarts
+    url: "jdbc:h2:file:${user.home}/.restclient/data;AUTO_SERVER=TRUE"
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      # 'update' adds new columns/tables without dropping existing data
+      ddl-auto: update
+    show-sql: false
+  h2:
+    console:
+      # disable in production, enable only for local debugging
+      enabled: false
+
+logging:
+  level:
+    com.restclient: INFO
+    org.springframework.data: WARN
